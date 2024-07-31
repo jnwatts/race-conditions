@@ -97,7 +97,7 @@ s.on('request', (req, res) => {
 			}
 		} else if (req.url == "/" || req.url == "/index.html") {
 			serve_file(res, "./index.html", "text/html");
-		} else if (req.url == "/" || req.url == "/index.js") {
+		} else if (req.url == "/index.js") {
 			serve_file(res, "./index.js", "application/javascript");
 		} else {
 			res.statusCode = 404;
