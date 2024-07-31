@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+<style>
+input[type="text"] {
+    border: none;
+    border-bottom: 1px solid black;
+    margin-right: 1em;
+    margin-left: 1em;
+}
+</style>
+</head>
+<body>
+    <h1>Race-Conditions</h1>
+
+    <p>
+        <button id="add_driver">Add driver</button>
+        <button id="sort_drivers">Update table</button>
+        <button id="parse_table">Parse table</button>
+        <button id="save">Save</button>
+        <button id="load">Load</button>
+    </p>
+
+    <p>
+        <textarea cols=40 id="table"></textarea>
+    </p>
+
+    <ol id="drivers"></ol>
+
+    <template id="driver_template"><li class="driver"><input type="text" id="name"><input type="text" id="time"><button id="del_driver">Delete</button></li></template>
+    <script src="index.js"></script>
+</body>
+</html>
