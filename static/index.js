@@ -76,6 +76,7 @@ window.addEventListener('load', () => {
     }
 
     window.lb = {
+        bid: 1,
         drivers: [],
 
         add_driver: () => {
@@ -148,8 +149,14 @@ window.addEventListener('load', () => {
                 ver: 1,
                 drivers: window.lb.drivers.map((d) => { return {name: d.name, time: d.time} }),
             };
-            fetch('board', {
-                method: "POST",
+            let uri = 'board';
+            let method = 'POST';
+            if (window.lb.bid) {
+                uri += '/' + window.lb.bid.toString();
+                method = 'PUT';
+            }
+            fetch(uri, {
+                method: method,
                 headers: {
                   "Content-Type": "application/json",
                 },
