@@ -128,7 +128,6 @@ class Board {
 		return {
 			ver: 1,
 			name: this._name,
-			bid: this._bid,
 			drivers: this._drivers
 		}
 	}
