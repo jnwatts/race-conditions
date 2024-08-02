@@ -16,6 +16,10 @@ const validate_board = ajv.compile({
 		id: {
 			type: "integer"
 		},
+		name: {
+			type: "string",
+			maxLength: 64
+		},
 		drivers: {
 			type: "array",
 			items: {
@@ -38,7 +42,8 @@ const validate_board = ajv.compile({
 	},
 	required: [
 		"ver",
-		"drivers"
+		"drivers",
+		"name"
 	],
 	additionalProperties: false
 });
@@ -54,6 +59,7 @@ class Board {
 	constructor() {
 		this._drivers = [];
 		this._bid = undefined;
+		this._name = undefined;
 	}
 
 	static nextId() {
@@ -114,12 +120,14 @@ class Board {
 			d.name = d.name.replace(/[^A-Za-z\s]/g, '');
 			return d;
 		});
+		board._name = o.name.replace(/[^\w+\w\s,.-_=#\[\]]/g, '');
 		return board;
 	}
 
 	toJson() {
 		return {
 			ver: 1,
+			name: this._name,
 			bid: this._bid,
 			drivers: this._drivers
 		}
