@@ -131,6 +131,14 @@ class Board {
 			drivers: this._drivers
 		}
 	}
+
+	static all() {
+		return fs.readdirSync(board_path).filter((f) => f.endsWith(".json")).map((f) => parseInt(f.replace(".json", "")));
+	}
+
+	static top10() {
+		return Board.all().sort((a,b) => b - a).slice(0,10);
+	}
 }
 
 s = express();
@@ -150,6 +158,10 @@ s.post('/board', (req, res) => {
 	res.status(200);
 	res.end();
 
+});
+s.get('/boards', (req, res) => {
+	res.status(200);
+	res.type('application/json').json(Board.top10());
 });
 s.route('/board/:bid?')
 	.get((req, res) => {
