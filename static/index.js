@@ -35,7 +35,7 @@ window.addEventListener('load', () => {
             t -= m * 60.0;
             let s = Math.floor(t);
             t -= s;
-            let ms = Math.floor(t * 1000);
+            let ms = Math.round(t * 1000.0);
             if (m > 0) {
                 v = m.toString() + ":" + s.toString().padStart(2, '0') + ".";
             } else {
