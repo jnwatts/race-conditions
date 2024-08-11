@@ -31,4 +31,10 @@ class Boards {
     static top10() {
         return fetch(`boards`).then((res) => res.json());
     }
+
+    static setDefault(bid) {
+        return fetch(`board/${bid}/default`, {
+            method: 'PUT'
+        });
+    }
 }

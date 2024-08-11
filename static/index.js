@@ -62,12 +62,15 @@ window.addEventListener('load', () => {
             });
             window.lb.sort_drivers();
         },
-        load: () => {
-            Boards.get(window.lb.id).then((board) => {
+        load: (id) => {
+            Boards.get(id).then((board) => {
                 window.lb.id = board.id;
                 window.lb.name = board.name;
                 window.lb.drivers = board.drivers.map((d) => new Driver(d));
                 window.lb.sort_drivers();
+                document.querySelector("#set_default").disabled = (!id);
+            }).catch((e) => {
+                window.lb.new();
             });
         },
         new: () => {
@@ -76,6 +79,7 @@ window.addEventListener('load', () => {
             window.lb.drivers = [];
             window.lb.add_driver();
             window.lb.sort_drivers();
+            document.querySelector("#set_default").disabled = true;
         },
         save: () => {
             window.lb.sort_drivers();
@@ -89,6 +93,10 @@ window.addEventListener('load', () => {
         open: () => {
             window.location.href = "/open.html";
         },
+        set_default: () => {
+            Boards.setDefault(window.lb.id);
+            window.location.search = "";
+        },
         name_change: (e) => {
             window.lb.name = e.target.value;
         },
@@ -98,13 +106,14 @@ window.addEventListener('load', () => {
     document.querySelector("#new").addEventListener('click', lb.new);
     document.querySelector("#save").addEventListener('click', lb.save);
     document.querySelector("#open").addEventListener('click', lb.open);
+    document.querySelector("#set_default").addEventListener('click', lb.set_default);
     document.querySelector("#board_name").addEventListener('change', lb.name_change);
 
-    window.lb.id = parseInt((new URLSearchParams(window.location.search)).get("id"));
-    if (!window.lb.id) {
-        window.lb.id = undefined;
-    }
-    console.log(window.lb.id);
+    window.lb.search_id = parseInt((new URLSearchParams(window.location.search)).get("id"))
 
-    window.lb.load();
+    try {
+        window.lb.load(window.lb.search_id);
+    } catch (err) {
+        window.lb.new();
+    }
 });

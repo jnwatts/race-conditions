@@ -79,6 +79,28 @@ class Board {
 		return Board._next;
 	}
 
+	static default() {
+		let bid = undefined;
+		try {
+			bid = parseInt(fs.readFileSync(path.join(board_path, "default")));
+		} catch (err) {
+		}
+
+		if (!bid) {
+			return null;
+		}
+
+		return Board.byId(bid);
+	}
+
+	static setDefault(bid) {
+		try {
+			fs.writeFileSync(path.join(board_path, "default"), bid.toString());
+		} catch (err) {
+		}
+		console.log("DEFAULT", bid);
+	}
+
 	static byId(bid) {
 		if (!Board.exists(bid)) {
 			return null;
@@ -200,7 +222,12 @@ s.route('/board/:bid?')
 		} else {
 			bid = parseInt(bid);
 		}
-		let board = Board.byId(bid);
+		let board;
+		if (!bid) {
+			board = Board.default();
+		} else {
+			board = Board.byId(bid);
+		}
 		if (!board) {
 			res.status(404);
 			res.end();
@@ -229,6 +256,33 @@ s.route('/board/:bid?')
 			return;
 		}
 		board.save(bid);
+		res.status(200);
+		res.end();
+	});
+s.route('/board/:bid/default')
+	.get((req, res) => {
+		let bid = req.params.bid;
+		bid = parseInt(bid);
+		if (!Board.exists(bid)) {
+			res.status(404);
+			res.end();
+			return;
+		}
+		let b = Board.default();
+		res.type('application/json').json(b.id == bid);
+		res.status(200);
+		res.end();
+	})
+	.put((req, res) => {
+		let bid = req.params.bid;
+		bid = parseInt(bid);
+		if (!Board.exists(bid)) {
+			res.status(404);
+			res.end();
+			return;
+		}
+		Board.setDefault(bid);
+		res.type('application/json').json(true);
 		res.status(200);
 		res.end();
 	});
