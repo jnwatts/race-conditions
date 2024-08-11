@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+<style>
+input[type="text"] {
+    border: none;
+    border-bottom: 1px solid black;
+    margin-right: 1em;
+    margin-left: 1em;
+}
+</style>
+</head>
+<body>
+    <h1>Race-Conditions</h1>
+
+    <ul id="boards">
+    </ul>
+
+    <template id="board_template"><li class="board"><a id="name"></a> <span id="created"></span></li></template>
+
+    <script src="boards.js"></script>
+    <script>
+window.addEventListener('load', async () => {
+    const t = document.querySelector("#board_template");
+    let boards = await Boards.top10();
+    document.querySelector('#boards').replaceChildren(...boards.map((b) => {
+        let e_b = t.content.cloneNode(true);
+        let e_n = e_b.querySelector("#name");
+        let e_c = e_b.querySelector("#created");
+        e_n.innerText = b.name;
+        e_n.href = `/?id=${b.id}`;
+        let d = new Date(b.created);
+        e_c.innerText = d.toLocaleDateString() + " " + d.toLocaleTimeString();
+        return e_b;
+    }));
+});
+    </script>
+</body>
+</html>

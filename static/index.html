@@ -15,22 +15,27 @@ input[type="text"] {
 </head>
 <body>
     <h1>Race-Conditions</h1>
-
     <p>
-        <button id="add_driver">Add driver</button>
-        <button id="sort_drivers">Update table</button>
-        <button id="parse_table">Parse table</button>
+        <button id="new">New</button>
         <button id="save">Save</button>
-        <button id="load">Load</button>
+        <button id="open">Open</button>
     </p>
 
     <p>
         <textarea cols=40 id="table"></textarea>
     </p>
 
+    <p>
+        <input type="text" id="board_name">
+    </p>
+
+    <button id="add_driver">Add driver</button>
+
     <ol id="drivers"></ol>
 
     <template id="driver_template"><li class="driver"><input type="text" id="name"><input type="text" id="time"><button id="del_driver">Delete</button></li></template>
+    <script src="boards.js"></script>
+    <script src="driver.js"></script>
     <script src="index.js"></script>
 </body>
 </html>

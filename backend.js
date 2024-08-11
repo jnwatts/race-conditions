@@ -14,11 +14,18 @@ const validate_board = ajv.compile({
 	properties: {
 		ver: {type: "integer", const: 1},
 		id: {
-			type: "integer"
+			type: "integer",
+			minimum: 1
 		},
 		name: {
 			type: "string",
 			maxLength: 64
+		},
+		created: {
+			type: "string"
+		},
+		modified: {
+			type: "string"
 		},
 		drivers: {
 			type: "array",
@@ -58,7 +65,7 @@ class Board {
 
 	constructor() {
 		this._drivers = [];
-		this._bid = undefined;
+		this._id = undefined;
 		this._name = undefined;
 	}
 
@@ -77,15 +84,19 @@ class Board {
 			return null;
 		}
 		let o;
+		let st;
 		try {
 			console.log("READ", bid);
+			let fn = bid_to_path(bid);
+			st = fs.statSync(fn);
 			o = JSON.parse(fs.readFileSync(bid_to_path(bid)));
 		} catch(err) {
 			return null;
 		}
-		let board = new Board();
-		board._drivers = o.drivers;
-		return board;
+		let b = Board.fromJson(o);
+		b._id = bid;
+		b._st = st;
+		return b;
 	}
 
 	static exists(bid) {
@@ -95,7 +106,7 @@ class Board {
 			let st = fs.statSync(fn);
 			exists = true;
 		} catch(err) {
-			console.log("ERR", err);
+			// console.log("ERR", err);
 		}
 		console.log("EXISTS", bid, fn, exists);
 		return exists;
@@ -103,11 +114,13 @@ class Board {
 
 	save(bid) {
 		if (!bid) {
-			this._bid = Board.nextId();
+			this._id = Board.nextId();
+		} else {
+			this._id = bid;
 		}
-		let o = this.toJson();
+		let o = this.toFileJson();
 		console.log(Date.now(), 'SAVE', o);
-		fs.writeFileSync(bid_to_path(bid), JSON.stringify(o));
+		fs.writeFileSync(bid_to_path(this._id), JSON.stringify(o));
 	}
 
 	static fromJson(o) {
@@ -116,15 +129,30 @@ class Board {
 			return null;
 		}
 		let board = new Board();
+		board._id = o.id;
 		board._drivers = o.drivers.map((d) => {
 			d.name = d.name.replace(/[^A-Za-z\s]/g, '');
 			return d;
 		});
 		board._name = o.name.replace(/[^\w+\w\s,.-_=#\[\]]/g, '');
+		if (!board._name) {
+			board._name = "Unititled";
+		}
 		return board;
 	}
 
 	toJson() {
+		return {
+			ver: 1,
+			id: this._id,
+			created: this._st.birthtime,
+			modified: this._st.mtime,
+			name: this._name,
+			drivers: this._drivers
+		}
+	}
+
+	toFileJson() {
 		return {
 			ver: 1,
 			name: this._name,
@@ -137,11 +165,12 @@ class Board {
 	}
 
 	static top10() {
-		return Board.all().sort((a,b) => b - a).slice(0,10);
+		return Board.all().sort((a,b) => b - a).slice(0,10).map((bid) => Board.byId(bid).toJson());
 	}
 }
 
 s = express();
+s.set('etag', false);
 s.use(express.json());
 s.use(express.static(static_path));
 s.get('/', (req, res) => {

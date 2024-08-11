@@ -1,82 +1,7 @@
 window.addEventListener('load', () => {
-    class Driver {
-        constructor(params) {
-            if (!params) {
-                params = {};
-            }
-            const driver_template = document.querySelector("#driver_template");
-            let e = driver_template.content.cloneNode(true);
-            this.e_li = e.querySelector("li.driver");
-            this.e_name = e.querySelector("#name");
-            this.e_time = e.querySelector("#time");
-            this.e_delete = e.querySelector("#del_driver");
-            if ("name" in params) {
-                this.name = params.name;
-            } else {
-                this.name = "";
-            }
-            if ("time" in params) {
-                this.time = params.time;
-            } else {
-                this.time = 0.0;
-            }
-            e.querySelectorAll("input").forEach((v, i, l) => {
-                v.addEventListener('change', (e) => { this.change(e); });
-            });
-            this.e_delete.addEventListener('click', (e) => { window.lb.del_driver(this); });
-        }
-
-        static timeToString(t) {
-            if (!t) {
-                return "0.000";
-            }
-            let v;
-            let m = Math.floor(t / 60.0);
-            t -= m * 60.0;
-            let s = Math.floor(t);
-            t -= s;
-            let ms = Math.round(t * 1000.0);
-            if (m > 0) {
-                v = m.toString() + ":" + s.toString().padStart(2, '0') + ".";
-            } else {
-                v = s.toString() + ".";
-            }
-            v += ms.toString().padStart(3, '0');
-            return v;
-        }
-
-        static stringToTime(v) {
-            if (!v) {
-                return 0.0;
-            }
-            let t = 0.0;
-            let p;
-            p = v.split(':');
-            if (p.length > 1) {
-                t += 60.0 * parseFloat(p[0]);
-                p.shift();
-            }
-            t += parseFloat(p[0]);
-            if (t == NaN)
-                return 0.0;
-            return t;
-        }
-
-        render() {
-            this.e_name.value = this.name;
-            this.e_time.value = Driver.timeToString(this.time);
-        }
-
-        change(e) {
-            this.name = this.e_name.value.replace(/[^A-Za-z\s]/g, '');
-            this.time = Driver.stringToTime(this.e_time.value);
-            this.e_li.setAttribute('id', this.name);
-            this.render();
-        }
-    }
-
     window.lb = {
-        bid: 1,
+        id: undefined,
+        name: undefined,
         drivers: [],
 
         add_driver: () => {
@@ -89,6 +14,7 @@ window.addEventListener('load', () => {
             window.lb.drivers = window.lb.drivers.filter((_d) => { return _d.name != d.name; });
         },
         sort_drivers: (e) => {
+            document.querySelector("#board_name").value = window.lb.name;
             window.lb.drivers.sort((a,b) => {
                 return a.time - b.time;
             });
@@ -137,39 +63,48 @@ window.addEventListener('load', () => {
             window.lb.sort_drivers();
         },
         load: () => {
-            fetch('board').then((res) => {
-                res.json().then((board) => {
-                    window.lb.drivers = board.drivers.map((d) => new Driver(d));
-                    window.lb.sort_drivers();
-                });
+            Boards.get(window.lb.id).then((board) => {
+                window.lb.id = board.id;
+                window.lb.name = board.name;
+                window.lb.drivers = board.drivers.map((d) => new Driver(d));
+                window.lb.sort_drivers();
             });
         },
+        new: () => {
+            window.lb.id = undefined;
+            window.lb.name = "Untitled";
+            window.lb.drivers = [];
+            window.lb.add_driver();
+            window.lb.sort_drivers();
+        },
         save: () => {
+            window.lb.sort_drivers();
             let board = {
                 ver: 1,
+                name: window.lb.name,
                 drivers: window.lb.drivers.map((d) => { return {name: d.name, time: d.time} }),
             };
-            let uri = 'board';
-            let method = 'POST';
-            if (window.lb.bid) {
-                uri += '/' + window.lb.bid.toString();
-                method = 'PUT';
-            }
-            fetch(uri, {
-                method: method,
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(board),
-            });
+            Boards.put(window.lb.id, board);
+        },
+        open: () => {
+            window.location.href = "/open.html";
+        },
+        name_change: (e) => {
+            window.lb.name = e.target.value;
         },
     };
 
     document.querySelector("#add_driver").addEventListener('click', lb.add_driver);
-    document.querySelector("#sort_drivers").addEventListener('click', lb.sort_drivers);
-    document.querySelector("#parse_table").addEventListener('click', lb.parse_table);
-    document.querySelector("#load").addEventListener('click', lb.load);
+    document.querySelector("#new").addEventListener('click', lb.new);
     document.querySelector("#save").addEventListener('click', lb.save);
+    document.querySelector("#open").addEventListener('click', lb.open);
+    document.querySelector("#board_name").addEventListener('change', lb.name_change);
+
+    window.lb.id = parseInt((new URLSearchParams(window.location.search)).get("id"));
+    if (!window.lb.id) {
+        window.lb.id = undefined;
+    }
+    console.log(window.lb.id);
 
     window.lb.load();
 });
