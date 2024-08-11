@@ -103,6 +103,7 @@ window.addEventListener('load', () => {
         },
     };
 
+    document.querySelector("#table").addEventListener('change', lb.parse_table);
     document.querySelector("#add_driver").addEventListener('click', lb.add_driver);
     document.querySelector("#new").addEventListener('click', lb.new);
     document.querySelector("#save").addEventListener('click', lb.save);
