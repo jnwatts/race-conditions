@@ -13,7 +13,7 @@ class Boards {
     }
 
     static put(bid, board) {
-        let uri = 'board';
+        let uri = this.api_path + '/board';
         let method = 'POST';
         if (bid) {
             uri += '/' + bid.toString();
@@ -29,11 +29,11 @@ class Boards {
     }
 
     static top10() {
-        return fetch(`boards`).then((res) => res.json());
+        return fetch(this.api_path + `/boards`).then((res) => res.json());
     }
 
     static setDefault(bid) {
-        return fetch(`board/${bid}/default`, {
+        return fetch(this.api_path + `board/${bid}/default`, {
             method: 'PUT'
         });
     }

@@ -91,7 +91,7 @@ window.addEventListener('load', () => {
             Boards.put(window.lb.id, board);
         },
         open: () => {
-            window.location.href = "/open.html";
+            window.location.href = Boards.api_path + "/open.html";
         },
         set_default: () => {
             Boards.setDefault(window.lb.id);
@@ -110,6 +110,7 @@ window.addEventListener('load', () => {
     document.querySelector("#board_name").addEventListener('change', lb.name_change);
 
     window.lb.search_id = parseInt((new URLSearchParams(window.location.search)).get("id"))
+Boards.api_path = document.URL.substr(0,document.URL.lastIndexOf('/'));
 
     try {
         window.lb.load(window.lb.search_id);

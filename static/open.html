@@ -24,6 +24,7 @@ input[type="text"] {
     <script src="boards.js"></script>
     <script>
 window.addEventListener('load', async () => {
+    Boards.api_path = document.URL.substr(0,document.URL.lastIndexOf('/'));
     const t = document.querySelector("#board_template");
     let e = document.querySelector('#boards');
     let boards = await Boards.top10();
@@ -33,7 +34,7 @@ window.addEventListener('load', async () => {
             let e_n = e_b.querySelector("#name");
             let e_c = e_b.querySelector("#created");
             e_n.innerText = b.name;
-            e_n.href = `/?id=${b.id}`;
+            e_n.href = Boards.api_path + `/?id=${b.id}`;
             let d = new Date(b.created);
             e_c.innerText = d.toLocaleDateString() + " " + d.toLocaleTimeString();
             return e_b;
