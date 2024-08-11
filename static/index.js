@@ -94,8 +94,9 @@ window.addEventListener('load', () => {
             window.location.href = Boards.api_path + "/open.html";
         },
         set_default: () => {
-            Boards.setDefault(window.lb.id);
-            window.location.search = "";
+            Boards.setDefault(window.lb.id).then(() => {
+                window.location.search = "";
+            });
         },
         name_change: (e) => {
             window.lb.name = e.target.value;
