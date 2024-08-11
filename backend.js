@@ -232,33 +232,6 @@ s.route('/board/:bid?')
 		res.status(200);
 		res.end();
 	});
-s.route('/board/:bid/drivers')
-	.get((req, res) => {
-		let bid = req.params.bid;
-		if (!bid) {
-			bid = undefined;
-		} else {
-			bid = parseInt(bid);
-		}
-		let board = Board.byId(bid);
-		console.log(board);
-		res.json(board.drivers());
-	});
-s.route('/board/:bid/driver/:name')
-	.get((req, res) => {
-		let bid = req.params.bid;
-		if (!bid) {
-			bid = undefined;
-		} else {
-			bid = parseInt(bid);
-		}
-		let name = req.params.name;
-		if (!name) {
-			name = undefined;
-		}
-		let board = Board.byId(bid);
-		res.json(board.driver(name));
-	});
 s.listen(http_port);
 
 console.log("BOARD_PATH", board_path);
