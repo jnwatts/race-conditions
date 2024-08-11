@@ -288,5 +288,6 @@ s.route('/board/:bid/default')
 	});
 s.listen(http_port);
 
+console.log("STATIC_PATH", static_path);
 console.log("BOARD_PATH", board_path);
 console.log("PORT", http_port);
