@@ -7,9 +7,9 @@ class Boards {
 
     static get(bid) {
         if (!bid) {
-            return fetch(`board`).then((res) => res.json());
+            return fetch(this.api_path + `/board`).then((res) => res.json());
         }
-        return fetch(`board/${bid}`).then((res) => res.json());
+        return fetch(this.api_path + `/board/${bid}`).then((res) => res.json());
     }
 
     static put(bid, board) {
@@ -33,7 +33,7 @@ class Boards {
     }
 
     static setDefault(bid) {
-        return fetch(this.api_path + `board/${bid}/default`, {
+        return fetch(this.api_path + `/board/${bid}/default`, {
             method: 'PUT'
         });
     }
