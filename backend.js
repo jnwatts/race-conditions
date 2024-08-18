@@ -9,7 +9,15 @@ var board_path = process.env.BOARD_PATH;
 board_path ??= "/var/lib/race/";
 var http_port = process.env.HTTP_PORT;
 http_port ??= 8000;
-const validate_board = ajv.compile({
+const validate_board_version = ajv.compile({
+	type: "object",
+	properties: {
+		ver: {type: "integer"},
+	},
+	required: ["ver"],
+	additionalProperties: true
+});
+const validate_board_v1 = ajv.compile({
 	type: "object",
 	properties: {
 		ver: {type: "integer", const: 1},
@@ -41,6 +49,56 @@ const validate_board = ajv.compile({
 				required: [
 					"name",
 					"time"
+				],
+				additionalProperties: false
+			},
+			maxItems: 128
+		}
+	},
+	required: [
+		"ver",
+		"drivers",
+		"name"
+	],
+	additionalProperties: false
+});
+const validate_board_v2 = ajv.compile({
+	type: "object",
+	properties: {
+		ver: {type: "integer", const: 2},
+		id: {
+			type: "integer",
+			minimum: 1
+		},
+		name: {
+			type: "string",
+			maxLength: 64
+		},
+		created: {
+			type: "string"
+		},
+		modified: {
+			type: "string"
+		},
+		drivers: {
+			type: "array",
+			items: {
+				type: "object",
+				properties: {
+					name: {
+						type: "string",
+						maxLength: 128
+					},
+					times: {
+						type: "array",
+						items: {
+							type: "number"
+						}
+					}
+				},
+				required: [
+					"name",
+					"times"
 				],
 				additionalProperties: false
 			},
@@ -145,11 +203,43 @@ class Board {
 		fs.writeFileSync(bid_to_path(this._id), JSON.stringify(o));
 	}
 
-	static fromJson(o) {
-		if (!validate_board(o)) {
-			console.log("Validate fail", o);
+	static parseVersion(o) {
+		if (!validate_board_version(o)) {
+			console.log("Validate version fail", o);
 			return null;
 		}
+		return parseInt(o.ver);
+	}
+
+	static fromJson(o) {
+		let ver = Board.parseVersion(o);
+		if (!ver) {
+			return null;
+		}
+		if (ver == 1) {
+			if (!validate_board_v1(o)) {
+				console.log("Validate fail", o);
+				return null;
+			}
+			// Upgrade to 2
+			o.drivers = o.drivers.map((d) => {
+				return {
+					name: d.name,
+					times: [d.time]
+				};
+			});
+			o.ver = 2;
+			ver = 2;
+		}
+		if(ver == 2) {
+			if (!validate_board_v2(o)) {
+				console.log("Validate fail", o);
+				return null;
+			}
+		} else {
+			console.log("Invalid version", o);
+		}
+
 		let board = new Board();
 		board._id = o.id;
 		board._drivers = o.drivers.map((d) => {
@@ -165,7 +255,7 @@ class Board {
 
 	toJson() {
 		return {
-			ver: 1,
+			ver: 2,
 			id: this._id,
 			created: this._st.birthtime,
 			modified: this._st.mtime,
@@ -176,7 +266,7 @@ class Board {
 
 	toFileJson() {
 		return {
-			ver: 1,
+			ver: 2,
 			name: this._name,
 			drivers: this._drivers
 		}
