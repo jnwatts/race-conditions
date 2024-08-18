@@ -11,6 +11,24 @@ input[type="text"] {
     margin-right: 1em;
     margin-left: 1em;
 }
+.time {
+    font-family: monospace;
+    width: 8ch;
+}
+#drivers {
+    padding-left: 0rem;
+    list-style-type: none;
+}
+#rank {
+    font-family: monospace;
+    margin-left: 1rem;
+    border: none;
+    width: 3ch;
+}
+.action {
+    font-family: monospace;
+    width: 3ch;
+}
 </style>
 </head>
 <body>
@@ -30,11 +48,21 @@ input[type="text"] {
         <input type="text" id="board_name">
     </p>
 
-    <button id="add_driver">Add driver</button>
+    <ul id="drivers"></ul>
 
-    <ol id="drivers"></ol>
+    <button id="add_driver" class="action">+</button>
 
-    <template id="driver_template"><li class="driver"><input type="text" id="name"><input type="text" id="time"><button id="del_driver">Delete</button></li></template>
+    <template id="driver_template">
+        <li class="driver">
+            <button id="del_driver" class="action">-</button>
+            <input id="rank">
+            <input type="text" id="name">
+            <span id="time"></span>
+        </li>
+    </template>
+    <template id="time_template">
+        <input type="text" class="time">
+    </template>
     <script src="boards.js"></script>
     <script src="driver.js"></script>
     <script src="index.js"></script>

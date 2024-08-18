@@ -16,16 +16,22 @@ window.addEventListener('load', () => {
         sort_drivers: (e) => {
             document.querySelector("#board_name").value = window.lb.name;
             window.lb.drivers.sort((a,b) => {
-                return a.time - b.time;
+                return a.bestTime() - b.bestTime();
             });
             let drivers = window.lb.drivers;
-            let sorted_elements = drivers.map((d) => {
+            let sorted_elements = drivers.map((d, i) => {
+                if (d.hasTimes()) {
+                    d.rank = (i+1);
+                } else {
+                    d.rank = "DNS";
+                }
                 d.render();
                 return d.e_li;
             });
             document.querySelector("#drivers").replaceChildren(...sorted_elements);
-            let names = drivers.map((d) => d.name);
-            let times = drivers.map((d) => d.time);
+            let valid_drivers = drivers.filter((d) => d.hasTimes());
+            let names = valid_drivers.map((d) => d.name);
+            let times = valid_drivers.map((d) => d.bestTime());
             let times_str = times.map((t) => Driver.timeToString(t));
             let n_width = Math.max(...names.map((v) => v.length));
             let t_width = Math.max(...times_str.map((v) => v.length));
@@ -57,7 +63,7 @@ window.addEventListener('load', () => {
                 }
                 window.lb.drivers.push(new Driver({
                     name: p[2].trim(),
-                    time: Driver.stringToTime(p[3])
+                    times: [Driver.stringToTime(p[3])]
                 }));
             });
             window.lb.sort_drivers();
@@ -70,6 +76,7 @@ window.addEventListener('load', () => {
                 window.lb.sort_drivers();
                 document.querySelector("#set_default").disabled = (!id);
             }).catch((e) => {
+                console.log(e);
                 window.lb.new();
             });
         },
@@ -84,9 +91,9 @@ window.addEventListener('load', () => {
         save: () => {
             window.lb.sort_drivers();
             let board = {
-                ver: 1,
+                ver: 2,
                 name: window.lb.name,
-                drivers: window.lb.drivers.map((d) => { return {name: d.name, time: d.time} }),
+                drivers: window.lb.drivers.map((d) => d.toJson()),
             };
             Boards.put(window.lb.id, board);
         },
