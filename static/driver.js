@@ -23,9 +23,7 @@ class Driver {
             this.times = [];
         }
         this.rank = 0;
-        e.querySelectorAll("input").forEach((v, i, l) => {
-            v.addEventListener('change', (e) => { this.change(e); });
-        });
+        e.querySelector("#name").addEventListener('change', (e) => { this.change(e); });
         this.e_delete.addEventListener('click', (e) => { window.lb.del_driver(this); });
         this.render();
     }
