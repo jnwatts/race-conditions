@@ -70,6 +70,10 @@ window.addEventListener('load', () => {
         },
         load: (id) => {
             Boards.get(id).then((board) => {
+                if (!board) {
+                    window.lb.new();
+                    return;
+                }
                 window.lb.id = board.id;
                 window.lb.name = board.name;
                 window.lb.drivers = board.drivers.map((d) => new Driver(d));
