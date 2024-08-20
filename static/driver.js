@@ -104,9 +104,9 @@ class Driver {
 
     change(e) {
         this.name = this.e_name.value.replace(/[^A-Za-z\s]/g, '');
-        this.times = Array.from(this.e_time.querySelectorAll(".time").values().map((e) => {
+        this.times = Array.from(this.e_time.querySelectorAll(".time")).map((e) => {
             return Driver.stringToTime(e.value);
-        }).filter((t) => t));
+        }).filter((t) => t);
         this.e_li.setAttribute('id', this.name);
         this.render();
     }
