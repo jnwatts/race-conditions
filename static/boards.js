@@ -5,11 +5,20 @@ class Boards {
         }
     }
 
+    static jsonFetch(args) {
+        return fetch(args).then((res) => {
+            if (!res.ok) {
+                return null;
+            }
+            return res.json();
+        });
+    }
+
     static get(bid) {
         if (!bid) {
-            return fetch(this.api_path + `/board`).then((res) => res.json());
+            return Boards.jsonFetch(this.api_path + `/board`);
         }
-        return fetch(this.api_path + `/board/${bid}`).then((res) => res.json());
+        return Boards.jsonFetch(this.api_path + `/board/${bid}`);
     }
 
     static put(bid, board) {
@@ -29,7 +38,7 @@ class Boards {
     }
 
     static top10() {
-        return fetch(this.api_path + `/boards`).then((res) => res.json());
+        return Boards.jsonFetch(this.api_path + `/boards`);
     }
 
     static setDefault(bid) {
