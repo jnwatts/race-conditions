@@ -76,6 +76,8 @@ window.addEventListener('load', () => {
                 }
                 window.lb.id = board.id;
                 window.lb.name = board.name;
+                window.lb.created = board.created;
+                window.lb.modified = board.modified;
                 window.lb.drivers = board.drivers.map((d) => new Driver(d));
                 window.lb.sort_drivers();
                 document.querySelector("#set_default").disabled = (!id);
@@ -97,6 +99,8 @@ window.addEventListener('load', () => {
             let board = {
                 ver: 2,
                 name: window.lb.name,
+                created: window.lb.created,
+                modified: window.lb.modified,
                 drivers: window.lb.drivers.map((d) => d.toJson()),
             };
             Boards.put(window.lb.id, board);

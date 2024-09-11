@@ -168,14 +168,12 @@ class Board {
 		try {
 			console.log("READ", bid);
 			let fn = bid_to_path(bid);
-			st = fs.statSync(fn);
 			o = JSON.parse(fs.readFileSync(bid_to_path(bid)));
 		} catch(err) {
 			return null;
 		}
 		let b = Board.fromJson(o);
 		b._id = bid;
-		b._st = st;
 		return b;
 	}
 
@@ -195,9 +193,11 @@ class Board {
 	save(bid) {
 		if (!bid) {
 			this._id = Board.nextId();
+			this._created = new Date();
 		} else {
 			this._id = bid;
 		}
+		this._modified = new Date();
 		let o = this.toFileJson();
 		console.log(Date.now(), 'SAVE', o);
 		fs.writeFileSync(bid_to_path(this._id), JSON.stringify(o));
@@ -250,6 +250,8 @@ class Board {
 		if (!board._name) {
 			board._name = "Unititled";
 		}
+		board._created = new Date(o.created);
+		board._modified = new Date(o.modified);
 		return board;
 	}
 
@@ -257,9 +259,9 @@ class Board {
 		return {
 			ver: 2,
 			id: this._id,
-			created: this._st.birthtime,
-			modified: this._st.mtime,
 			name: this._name,
+			created: this._created,
+			modified: this._modified,
 			drivers: this._drivers
 		}
 	}
@@ -268,6 +270,8 @@ class Board {
 		return {
 			ver: 2,
 			name: this._name,
+			created: this._created,
+			modified: this._modified,
 			drivers: this._drivers
 		}
 	}
