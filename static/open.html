@@ -29,6 +29,7 @@ window.addEventListener('load', async () => {
     let e = document.querySelector('#boards');
     let boards = await Boards.top10();
     if (boards.length) {
+        boards.sort((a,b) => { return b.created.localeCompare(a.created); });
         e.replaceChildren(...boards.map((b) => {
             let e_b = t.content.cloneNode(true);
             let e_n = e_b.querySelector("#name");
