@@ -148,7 +148,7 @@ window.addEventListener('load', () => {
             Boards.put(window.lb.id, board);
         },
         open: () => {
-            window.location.href = Boards.api_path + "/open.html";
+            window.location.href = Boards.api_path + "/open.html?limit=10";
         },
         set_default: () => {
             Boards.setDefault(window.lb.id).then(() => {
