@@ -276,12 +276,17 @@ class Board {
 		}
 	}
 
-	static all() {
+	static allIds() {
 		return fs.readdirSync(board_path).filter((f) => f.endsWith(".json")).map((f) => parseInt(f.replace(".json", "")));
 	}
 
+	static all() {
+		return this.allIds().map((bid) => Board.byId(bid));
+	}
+
 	static top10() {
-		return Board.all().sort((a,b) => b - a).slice(0,10).map((bid) => Board.byId(bid).toJson());
+		let boards = this.all();
+		return boards.sort((a,b) => b._created - a._created).slice(0,10);
 	}
 }
 
@@ -306,7 +311,7 @@ s.post('/board', (req, res) => {
 });
 s.get('/boards', (req, res) => {
 	res.status(200);
-	res.type('application/json').json(Board.top10());
+	res.type('application/json').json(Board.top10().map((b) => b.toJson()));
 });
 s.route('/board/:bid?')
 	.get((req, res) => {
