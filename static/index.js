@@ -53,6 +53,9 @@ window.addEventListener('load', () => {
             tbl.setAttribute('rows', names.length);
 
             if (typeof window.Chart !== 'undefined') {
+                if (typeof window.lb.chart !== 'undefined') {
+                    window.lb.chart.destroy();
+                }
                 let session_counts = [];
                 let all_times = [];
                 let datasets = drivers.map((d) => {
@@ -64,7 +67,7 @@ window.addEventListener('load', () => {
                         data: times,
                     };
                 });
-                let char = new Chart(document.querySelector('#chart'), {
+                window.lb.chart = new Chart(document.querySelector('#chart'), {
                     type: 'line',
                     data: {
                         labels: new Array(Math.max(...session_counts)).fill(1).map( (_, i) => i+1 ),
