@@ -113,20 +113,23 @@ window.addEventListener('load', () => {
             });
             window.lb.sort_drivers();
         },
+        parse_board: (board) => {
+            if (!board) {
+                window.lb.new();
+                return;
+            }
+            window.lb.id = board.id;
+            window.lb.name = board.name;
+            window.lb.created = board.created;
+            window.lb.modified = board.modified;
+            window.lb.drivers = board.drivers.map((d) => new Driver(d));
+            window.lb.sort_drivers();
+            document.querySelector("#set_default").disabled = (!board.id);
+            window.history.replaceState(null, document.title, window.location.href.replace(window.location.search, '') + "?id=" + board.id);
+        },
         load: (id) => {
-            Boards.get(id).then((board) => {
-                if (!board) {
-                    window.lb.new();
-                    return;
-                }
-                window.lb.id = board.id;
-                window.lb.name = board.name;
-                window.lb.created = board.created;
-                window.lb.modified = board.modified;
-                window.lb.drivers = board.drivers.map((d) => new Driver(d));
-                window.lb.sort_drivers();
-                document.querySelector("#set_default").disabled = (!id);
-            }).catch((e) => {
+            Boards.get(id).then(window.lb.parse_board)
+            .catch((e) => {
                 console.log(e);
                 window.lb.new();
             });
@@ -138,6 +141,7 @@ window.addEventListener('load', () => {
             window.lb.add_driver();
             window.lb.sort_drivers();
             document.querySelector("#set_default").disabled = true;
+            window.history.replaceState(null, document.title, window.location.href.replace(window.location.search, ''));
         },
         save: () => {
             window.lb.sort_drivers();
@@ -148,7 +152,9 @@ window.addEventListener('load', () => {
                 modified: window.lb.modified,
                 drivers: window.lb.drivers.map((d) => d.toJson()),
             };
-            Boards.put(window.lb.id, board);
+            Boards.put(window.lb.id, board).then((board) => {
+                window.lb.parse_board(board);
+            });
         },
         open: () => {
             window.location.href = Boards.api_path + "/open.html?limit=10";
