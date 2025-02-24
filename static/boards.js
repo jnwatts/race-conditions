@@ -37,7 +37,11 @@ class Boards {
         });
     }
 
-    static top10() {
+    static top(limit) {
+        return Boards.jsonFetch(this.api_path + `/boards?limit=` + String(limit));
+    }
+
+    static all() {
         return Boards.jsonFetch(this.api_path + `/boards`);
     }
 

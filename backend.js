@@ -284,9 +284,8 @@ class Board {
 		return this.allIds().map((bid) => Board.byId(bid));
 	}
 
-	static top10() {
-		let boards = this.all();
-		return boards.sort((a,b) => b._created - a._created).slice(0,10);
+	static top(limit) {
+		return this.all().sort((a,b) => b._created - a._created).slice(0,limit);
 	}
 }
 
@@ -311,7 +310,21 @@ s.post('/board', (req, res) => {
 });
 s.get('/boards', (req, res) => {
 	res.status(200);
-	res.type('application/json').json(Board.top10().map((b) => b.toJson()));
+	let boards = [];
+	if ('limit' in req.query) {
+		let limit = parseInt(req.query.limit);
+		console.log(limit);
+		if (limit > 0 && limit <= 100) {
+			boards = Board.top(limit);
+		} else {
+			res.status(400);
+			res.end();
+			return;
+		}
+	} else {
+		boards = Board.all();
+	}
+	res.type('application/json').json(boards.map((b) => b.toJson()));
 });
 s.route('/board/:bid?')
 	.get((req, res) => {

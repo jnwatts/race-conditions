@@ -27,7 +27,17 @@ window.addEventListener('load', async () => {
     Boards.api_path = document.URL.substr(0,document.URL.lastIndexOf('/'));
     const t = document.querySelector("#board_template");
     let e = document.querySelector('#boards');
-    let boards = await Boards.top10();
+    let boards = [];
+    if (window.location.search) {
+        let params = new URLSearchParams(window.location.search);
+        let limit = params.get('limit');
+        if (limit) {
+            boards = await Boards.top(limit);
+        }
+    }
+    if (boards.length == 0) {
+        boards = await Boards.all();
+    }
     if (boards.length) {
         boards.sort((a,b) => { return b.created.localeCompare(a.created); });
         e.replaceChildren(...boards.map((b) => {
