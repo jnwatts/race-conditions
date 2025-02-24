@@ -51,6 +51,48 @@ window.addEventListener('load', () => {
             let tbl = document.querySelector('#table');
             tbl.value = v;
             tbl.setAttribute('rows', names.length);
+
+            if (typeof window.Chart !== 'undefined') {
+                let session_counts = [];
+                let all_times = [];
+                let datasets = drivers.map((d) => {
+                    let times = d.validTimes().map((t,session) => t);
+                    session_counts.push(times.length);
+                    all_times.push(...times);
+                    return {
+                        label: d.name,
+                        data: times,
+                    };
+                });
+                let char = new Chart(document.querySelector('#chart'), {
+                    type: 'line',
+                    data: {
+                        labels: new Array(Math.max(...session_counts)).fill(1).map( (_, i) => i+1 ),
+                        datasets: datasets,
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                min: Math.min(...all_times) - 0.25,
+                                max: Math.max(...all_times) + 0.25,
+                                ticks: {
+                                    callback: (value, index, ticks) => {
+                                        return Driver.timeToString(value);
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    title: (tooltips) => { return tooltips.map((t) => { return t.dataset.label + " #" + t.label; }) },
+                                    label: (t) => { return Driver.timeToString(t.raw); },
+                                }
+                            }
+                        }
+                    }
+                });
+            }
         },
         parse_table: () => {
             window.lb.drivers = [];

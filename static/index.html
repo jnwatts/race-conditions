@@ -52,6 +52,10 @@ input[type="text"] {
 
     <button id="add_driver" class="action">+</button>
 
+    <p>
+        <div><canvas id="chart" width="600" height="300"></canvas></div>
+    </p>
+
     <template id="driver_template">
         <li class="driver">
             <button id="del_driver" class="action">-</button>
@@ -63,6 +67,7 @@ input[type="text"] {
     <template id="time_template">
         <input type="text" class="time">
     </template>
+    <script src="chart.js"></script>
     <script src="boards.js"></script>
     <script src="driver.js"></script>
     <script src="index.js"></script>
