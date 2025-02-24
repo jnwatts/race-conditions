@@ -304,6 +304,7 @@ s.post('/board', (req, res) => {
 		return;
 	}
 	board.save(undefined);
+	res.type('application/json').json(board.toJson());
 	res.status(200);
 	res.end();
 
@@ -368,6 +369,7 @@ s.route('/board/:bid?')
 			return;
 		}
 		board.save(bid);
+		res.type('application/json').json(board.toJson());
 		res.status(200);
 		res.end();
 	});
