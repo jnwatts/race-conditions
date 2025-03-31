@@ -35,18 +35,23 @@ window.addEventListener('load', () => {
             let times_str = times.map((t) => Driver.timeToString(t));
             let n_width = Math.max(...names.map((v) => v.length));
             let t_width = Math.max(...times_str.map((v) => v.length));
+            let d_width = 5;
+            let r_width = 5;
             let v = "";
+            let delta = 0;
             for (let i = 0; i < names.length; i++) {
                 if (i == 0) {
                     delta = "---";
+                    ratio_to_first = "100";
                 } else {
                     delta = Driver.timeToString(times[i] - times[i - 1]);
                     if (delta == 0.0) {
                         delta = "---";
                     }
+                    ratio_to_first = ((times[0] / times[i]) * 100.0).toFixed(3);
                 }
                 const pad = "   ";
-                v += (i+1).toString() + ". " + names[i].padEnd(n_width, ' ') + pad + times_str[i].padStart(t_width, ' ') + pad + delta + "\n";
+                v += (i+1).toString() + ". " + names[i].padEnd(n_width, ' ') + pad + times_str[i].padStart(t_width, ' ') + pad + delta.padEnd(d_width) + pad + ratio_to_first.padEnd(r_width) + "\n";
             }
             let tbl = document.querySelector('#table');
             tbl.value = v;
