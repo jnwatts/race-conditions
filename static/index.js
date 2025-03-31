@@ -35,8 +35,8 @@ window.addEventListener('load', () => {
             let times_str = times.map((t) => Driver.timeToString(t));
             let n_width = Math.max(...names.map((v) => v.length));
             let t_width = Math.max(...times_str.map((v) => v.length));
-            let d_width = 5;
-            let r_width = 5;
+            let d_width = 6;
+            let r_width = 6;
             let v = "";
             let delta = 0;
             for (let i = 0; i < names.length; i++) {
